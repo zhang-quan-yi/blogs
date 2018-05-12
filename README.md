@@ -1,4 +1,4 @@
-![](.resource/iceland-lake-by-andre-ermolaev-three.jpg)
+![](./resource/iceland-lake-by-andre-ermolaev-three.jpg)
 [iceland-lake-by-andre-ermolaev](http://andre.ru/about-andre-ermolaev-creative-photography/)
 ### 起源 --Internet的历史简述
 #### 序
