@@ -171,7 +171,7 @@ cells = cells.map((cell, index) => {
 })
 ```
 
-####2. 通过计算，将每个 `cell`划分给特定的`section`（块）：
+#### 2. 通过计算，将每个 `cell`划分给特定的`section`（块）：
 
 `src/VirtualCollection.vue`
 
