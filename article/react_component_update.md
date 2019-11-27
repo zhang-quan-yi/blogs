@@ -128,15 +128,18 @@ class C2 extends React.Component{
 ```
 
 此时，如果我们点击 `C3` 组件的标题，就会触发 `update` 方法，执行 `setState` 方法，改变 `state` 中 `name` 的值，在 `C3` 组件的名称后面，出现了一串随机数字。控制台的输出结果表示， `C3` 的 `render` 方法执行了，如下图所示：
+
 ![结果](https://raw.githubusercontent.com/zhang-quan-yi/blogs/master/resource/react_state_update/p2.png)
 
 
 如果我们点击组件 `C1` 的标题，组件 `C1` 将会更新，`C1` 名字后面增加了一串随机数字，同时它的子组件 `C3` 的内容也更新了，结果如下：
+
 ![结果](https://raw.githubusercontent.com/zhang-quan-yi/blogs/master/resource/react_state_update/p3.png)
 
 通过控制台的输出，可以发现，`C1` 和 `C3` 的 `render` 方法都执行了。那么为什么组件 `C2` 没有更新呢？为什么它的 `render` 方法没有执行呢？
 
 接下来，点击组件 `Root` 的标题，可以发现组件树中的所有组件都更新了。也就是说，组件 `Root`，以及它的所有子节点都更新了，结果如下：
+
 ![结果](https://raw.githubusercontent.com/zhang-quan-yi/blogs/master/resource/react_state_update/p4.png)
 
 **至此，可以得出结论：组件通过调用 `setState` 方法触发自身更新，同时，也会触发它的所有子节点更新。**
