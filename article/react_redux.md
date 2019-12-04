@@ -24,7 +24,7 @@
 
 很容易想到的一个方案是，通过事件机制实现。
 
-## 基于事件机制实现示例
+## 基于事件的示例
 
 当我们一进入页面，需要做的就是根据初始数据渲染页面：
 
@@ -166,9 +166,143 @@ gameEvent.on('add_exp',function(e){
 });
 ```
 
-首先，更新 `gameState` 的相关代码比较分散，分别处于不同的回调函数中。其次，有重复的代码，`renderUI` 方法重复了两次。当应用变得庞大时，这两个问题就会凸显出来。
+示例中，更新 `gameState` 的相关代码比较分散，分别处于不同的回调函数中。其次，有重复的代码，`renderUI` 方法重复了两次。当应用变得庞大时，这两个问题就会凸显出来。
 
 接下来我们看看，用 `Redux` 来实现上面的示例，会有哪些不同。
+
+## 基于 `Redux` 的示例
+和之前的示例一样，需要设计应用的状态数据，并设置初始值：
+
+```javascript
+// state
+const gameState = {
+    hp: 1000,
+    exp: 0
+}
+```
+接下来是设计状态数据的更新。在 `Redux` 中，所有的状态更新都是是由一个函数集中处理的，称之为 `Reducder`。该函数最终返回最新的状态数据。
+
+```javascript
+// 参数 state 为当前的状态数据
+// 参数 action 是一个对象，表示更新 state 所需要的数据。与上例中 e 对象类似。
+function Reducder(state=gameState,action){
+    let newState = null;
+    switch (action.type) {
+        case 'drop_hp':
+            newState = Object.assign({}, state);
+            newState.hp -= action.hurt;
+            return newState;
+        case 'add_exp':
+            newState = Object.assign({}, state);
+            newState.exp += action.exp;
+            return newState;
+        default:
+            return state;
+    }
+}
+```
+
+还剩下什么呢？对的，是更新 `UI` 的代码以及触发状态改动的代码。让我们快速补全剩下的部分，来看看示例的全貌。
+
+```javascript
+const { createStore } = require('redux');
+
+// 创建 store
+const store = createStore(Reducder);
+
+// 注册 UI 更新代码
+store.subscribe(function renderUI(state){
+    // ...
+    // renderHp(state.hp)
+    // renderExp(state.exp)
+    // ...
+    console.log('render UI success,new state is:',state);
+});
+
+// 下面是交互代码，将会触发更新
+let action;
+action = {
+    type: 'drop_hp',
+    hurt: 10,
+}
+// 受到1次伤害，触发 drop_hp 动作
+store.dispatch(action);
+
+// 经验值增加，触发 add_exp 动作
+action = {
+    type: 'add_exp',
+    exp: 2,
+}
+store.dispatch(action);
+
+```
+
+输出结果为：
+![示例结果](https://raw.githubusercontent.com/zhang-quan-yi/blogs/master/resource/learn_redux_basic/redux_1_3.png)
+
+完整代码如下：
+
+```javascript
+const { createStore } = require('redux');
+
+// state
+const gameState = {
+    hp: 1000,
+    exp: 0
+};
+
+// Reducder
+function Reducder(state = gameState, action) {
+    let newState = null;
+    switch (action.type) {
+        case 'drop_hp':
+            newState = Object.assign({}, state);
+            newState.hp -= action.hurt;
+            return newState;
+        case 'add_exp':
+            newState = Object.assign({}, state);
+            newState.exp += action.exp;
+            return newState;
+        default:
+            return state;
+    }
+}
+
+// 创建 store
+const store = createStore(Reducder);
+
+// 注册 UI 更新代码
+store.subscribe(function renderUI() {
+    // ...
+    // renderHp(state.hp)
+    // renderExp(state.exp)
+    // ...
+    console.log('render UI success,new state is:', store.getState());
+});
+
+// 下面是交互代码，将会触发更新
+let action;
+action = {
+    type: 'drop_hp',
+    hurt: 10,
+}
+// 受到1次伤害，触发 drop_hp 动作
+store.dispatch(action);
+
+// 经验值增加，触发 add_exp 动作
+action = {
+    type: 'add_exp',
+    exp: 2,
+}
+store.dispatch(action);
+```
+
+相同的应用，相同的数据模型，不同的实现方式。先不去细究 `Redux` 的引入的那些概念，来感受一下代码的初印象。
+
+在 `Redux` 中，`Reducder` 函数的职责非常单一、专注，只处理状态的更新，并返回最新的状态对象。我需像事件示例那样，在不同的 `gameEvent.on` 函数中处理不同的状态更新。方便了维护和扩展。
+`store.subscribe` 方法接收一个函数，当有状态更新后，`Redux` 会执行这个函数。`UI` 更新的相关操作就可以在这里处理。`UI` 相关的代码并没有与其他代码参杂在一起。
+
+结下就要进入 `Redux` 中学习刚才遇到的 `action` `Reducder` `Store` 等概念。
 
 要实现
 - 基本介绍：什么是redux；何处听说的redux；redux的作用；
