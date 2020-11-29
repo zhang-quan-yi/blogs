@@ -285,6 +285,33 @@ let action;
 action = {
     type: 'drop_hp',
     hurt: 10,
+};
+// 受到1次伤害，触发 drop_hp 动作
+store.dispatch(action);
+
+// 经验值增加，触发 add_exp 动作
+action = {
+    type: 'add_exp',
+    exp: 2,
+};
+store.dispatch(action);
+```
+
+先不去细究 `Redux` 引入的那些概念，来感受一下 `Redux` 的初印象。
+
+在 `Redux` 中，`Reducder` 函数的职责非常单一、专注，只处理状态的更新，并返回最新的状态对象。无需像事件示例那样，在不同的 `gameEvent.on` 函数中处理不同的状态更新。方便了维护和扩展。
+`store.subscribe` 方法接收一个函数，当有状态更新后，`Redux` 会执行这个函数。`UI` 更新的相关操作就可以在这里处理，并没有与其他代码参杂在一起。
+
+下面让我们进入 `Redux` ，补充说明刚才遇到的 `action` `Reducder` `Store` 等概念。
+
+## Actions
+
+在前面的示例中，在处理交互代码时，我们就定义了两个 `action`。
+
+```javascript
+action = {
+    type: 'c',
+    hurt: 10,
 }
 // 受到1次伤害，触发 drop_hp 动作
 store.dispatch(action);
@@ -297,16 +324,21 @@ action = {
 store.dispatch(action);
 ```
 
-相同的应用，相同的数据模型，不同的实现方式。先不去细究 `Redux` 的引入的那些概念，来感受一下代码的初印象。
+`action` 是普通的 `Javascript` 对象，它携带着操作数据，被发送给状态管理器，之后由 `Reducder` 函数接受，并处理。我们通过 `store.dispatch` 方法发送 `action` 到状态管理器。
 
-在 `Redux` 中，`Reducder` 函数的职责非常单一、专注，只处理状态的更新，并返回最新的状态对象。我需像事件示例那样，在不同的 `gameEvent.on` 函数中处理不同的状态更新。方便了维护和扩展。
-`store.subscribe` 方法接收一个函数，当有状态更新后，`Redux` 会执行这个函数。`UI` 更新的相关操作就可以在这里处理。`UI` 相关的代码并没有与其他代码参杂在一起。
+`action` 对象必须包含 `type` 属性，表示操作类型，可以看作是动作的 ID。在项目中，`action` 和 `action` `type` 会在多处被引用，习惯性将 `action` 定义为一个工厂方法，将 `type` 定义为字符串常量，之前的示例可以写成下面这样：
 
-结下就要进入 `Redux` 中学习刚才遇到的 `action` `Reducder` `Store` 等概念。
+```javascript
+const DROP_HP= 'drop_hp';
 
-要实现
-- 基本介绍：什么是redux；何处听说的redux；redux的作用；
+const actionDropHp = function(hurt){
+    return {
+        type: DROP_HP,
+        hurt
+    };
+};
 
-接下来我们的示例均与UI无关。
+store.dispatch(actionDropHp(10));
+```
 
-- 示例：1. 示例的 full picture；2. 示例介绍；代码展示
+## Reducers
