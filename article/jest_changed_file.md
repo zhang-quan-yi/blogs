@@ -29,17 +29,38 @@
 ## `--onlyChanged`
 
 该选项会匹配当前项目中已经修改过的文件。
-执行 `jest --onlyChanged` 命令，会有如下效果：
+例如执行 `jest --onlyChanged` 命令，会有如下效果：
 ![onlyChanged 执行结果](https://github.com/zhang-quan-yi/blogs/blob/master/resource/jest_changed_file/jest_cli_only_changed.png)
 可以看到，只匹配到了 `changed.js` 文件，加入到暂存区的文件是无法匹配到的。
 
 ## --lastCommit
 
 匹配上一次 commit 的文件；
-执行 `jest --lastCommit` 命令，会有如下效果：
+例如执行 `jest --lastCommit` 命令，会有如下效果：
 ![lastCommit 执行结果](https://github.com/zhang-quan-yi/blogs/blob/master/resource/jest_changed_file/jest_cli_lastCommit.png)
+
 可以看到，匹配到了 `committed.js` 文件。
 
-## changedSince
+## --changedSince
 
-该选项需要提供一个提交点作为参考值，该参考点以后的所有改动的文件都会被匹配到。
+该选项需要提供一个提交点作为参考值，该参考点以后的所有改动的文件都会被匹配到。既然需要参考点，那么我们先看下我们目前的提交日志：
+![提交日志](https://github.com/zhang-quan-yi/blogs/blob/master/resource/jest_changed_file/jest_cli_git_log.png)
+
+例如执行 `jest --changedSince HEAD` 命令，也就是以最新一次提交作为参考点，会有如下效果：
+![changedSince 执行结果](https://github.com/zhang-quan-yi/blogs/blob/master/resource/jest_changed_file/jest_cli_changed_since_head.png)
+
+匹配到了 `changed.js` 和 `staged.js` 两个文件，也就是所有未提交的文件。
+
+如果执行 `jest --changedSince HEAD^` 命令，也就是以上一次提交作为参考点（commit bc1f 开头的 hash 值），会有如下效果：
+![changedSince 执行结果2](https://github.com/zhang-quan-yi/blogs/blob/master/resource/jest_changed_file/jest_cli_changed_since_head2.png)
+
+这次同样匹配了 `changed.js` 和 `staged.js` 文件，同时，最近提交的 `committed.js` 文件也匹配到了。
+
+## --changedFilesWithAncestor
+
+其实，该命令与 `jest --changedSince HEAD^` 命令等价，请看执行效果：
+![changedSince 执行结果2](https://github.com/zhang-quan-yi/blogs/blob/master/resource/jest_changed_file/jest_cli_changed_files_with_ancestor.png)
+
+## 结论
+
+就一般而言，如果需要在 `pre-commit` hook 执行相关文件的测试用例的话，`jest --changedSince HEAD` 命令是可以满足需求的。但不足的是，仅修改、但不打算提交的文件，也会匹配到，如上文中的 `changed.js` 文件。
