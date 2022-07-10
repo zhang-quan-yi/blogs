@@ -69,4 +69,11 @@ greet(people);
 greet(staff);
 ```
 
-可以看到，Staff 接口包含了 People 接口的所有成员。
+可以看到，Staff 接口包含了 People 接口的所有成员。函数 greet 期望接收 People 接口（类型）的参数。如果将参数改为 Staff 接口类型，那么同样可以通过 Typescript 的类型检查。
+
+## 子类型的极端情况
+
+了解了子类型是什么以后，我们来看两种极端情况：顶层类型和底层类型。
+顶层类型是其他任何类型的父类型。我们可以定义任何类型，但这些类型都将是顶层类型的子类型。如果将之前的 greet 函数的接收参数改为顶层类型，那么 greet 可以接收任何类型的参数了。因为任何期望父类型的地方，都可以安全使用子类型。
+在 Typescript 中，Object 类型是除了 null 和 undefined 之外的大部分类型的父类型。所以，我们可以将这三种类型的和类型作为顶层类型： Object | null | undefined。实际上，Typescript 是有顶层类型的定义的，该类型就是 unknown。
+（注：在 Typescript 中 null 类型是 null，而 undefined 类型是 undefined）
