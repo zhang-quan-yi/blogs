@@ -15,12 +15,12 @@ function greet(user: User) {
   console.log(`Hi ${user.name}`);
 }
 
-const isUser = (user: any): user is User => {
+function isUser(user: any): user is User {
   if (user === null || user === undefined) {
     return false;
   }
   return typeof user.name === "string";
-};
+}
 
 let user: any = deserialize('{"name": "zhao yi"}');
 if (isUser(user)) {

@@ -1,10 +1,7 @@
 export const title = "";
 
-class User {
+interface User {
   name: string;
-  constructor(name: string) {
-    this.name = name;
-  }
 }
 
 function deserialize(input: string): any {
