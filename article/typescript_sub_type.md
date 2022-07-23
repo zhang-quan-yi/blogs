@@ -19,8 +19,8 @@ const r2: unknown = n;
 
 ## 子类型基础介绍
 
-如果在期望类型 **Type** 实例的任何地方，都可以安全地使用类型 **SubType** 的实例，那么我们称类型 **SubType** 是类型 **Type** 的子类型。
-所以，如果类型 **SubType** 是类型 **Type** 的子类型，那么任何使用类型 **Type** 的地方，都可以类型安全地使用类型 **SubType** 的实例。
+如果在期望类型 **T1** 实例的任何地方，都可以安全地使用类型 **S2** 的实例，那么我们称类型 **S2** 是类型 **T1** 的子类型。
+同样的，如果类型 **S2** 是类型 **T1** 的子类型，那么任何使用类型 **T1** 的地方，都可以类型安全地使用类型 **S2** 的实例。
 
 ### 在 Typescript 中通过继承实现父子类型
 
@@ -87,12 +87,14 @@ greet(staff);
 
 可以看到，Staff 接口包含了 People 接口的所有成员。函数 greet 期望接收 People 接口（类型）的参数。如果将参数改为 Staff 接口类型，那么同样可以通过 Typescript 的类型检查。
 
-### 顶层类型：子类型的极端情况
+## 顶层类型：子类型的极端情况
 
 了解了子类型是什么以后，我们来看一种极端情况：**顶层类型**。
 顶层类型是其他任何类型的父类型。我们可以定义任何类型，但这些类型都将是顶层类型的子类型。如果将之前的 `greet` 函数的接收参数改为顶层类型，那么 `greet` 可以接收任何类型的参数了。因为任何期望父类型的地方，都可以安全使用子类型。
 在 **Typescript** 中，`Object` 类型是除了 `null` 和 `undefined` 之外的大部分类型的父类型。所以，我们可以将这三种类型的和类型作为顶层类型： `Object | null | undefined`。实际上，**Typescript** 是有顶层类型的定义的，该类型就是 `unknown`。
 （注：在 **Typescript** 中值 `null` 的类型是 `null`，而值 `undefined` 的类型是 `undefined`）
+
+## 顶层类型 `unknonwn` 使用场景
 
 接下来，通过一个具体场景，来看下 `unknown` 使如何使我们的类型定义更加安全的。
 
@@ -146,9 +148,9 @@ function isUser(user: any): user is User {
 ```
 
 这样，我们可以保证 greet 函数总是接收到 User 类型的 `deserialize` 返回值。
-美中不足的是，这种处理方式无法强制开发者使用 isUser 进行类型检查。开发者很容易忘记调用 `isUser`，从而允许 `deserialize` 得到的任意结果被传入 `greet` 函数。
-那么有没有另外一种方式，可以表达 “这个对象可以是任意类型”，但是没有 `any` 类型暗含的 “相信我，我知道我在做什么” 的意义，这不是更好吗？
-这就是 `unknown` 类型用武之地了。作为顶层类型，`unknown` 可以接收任何类型的值，但是 `unknown` 类型并不许诺可以对该值做任何处理。实际上，**Typescript** 不允许对 `unknown`
+美中不足的是，这种处理方式无法强制开发者使用 `isUser` 进行类型检查。开发者很容易忘记调用 `isUser`，从而允许 `deserialize` 得到的任意结果被传入 `greet` 函数。
+那么有没有另外一种方式，可以表达 “这个对象可以是任意类型”，但是没有 `any` 类型隐含的 “相信我，我知道我在做什么” 的意义，这不是更好吗？
+这就是 `unknown` 类型用武之地了。作为顶层类型，`unknown` 可以接收任何类型的值，但是 `unknown` 类型的值无法做任何操作。
 
 ```typescript
 function deserialize(input: string): unknown {
@@ -177,30 +179,10 @@ if (isUser(user)) {
 
 这样我们就不用担心，忘记检查 deserialize 的返回结果，直接调用 greet 函数了。
 
-## 底层类型
+## 总结
 
-如果一个类型是其他类型的子类型，我们称之为底层类型。要成为其他类型的子类型，它必须具有其他类型的成员。但是我们可以有无限个类型和成员，所以底层类型也必须有无限个成员。这是不可能的，所以底层类型始终是一个虚拟概念，不包含任何值。在 Typescript 中，类型 never 是底层类型，我们可以把它赋值给其他任何类型。
+在 `Typescript` 中，`unknown` 类型是顶层类型，它是所有类型的父类型。实际上我们可以将 `unknown` 定义为 `object | null | undefined`。所以我们可以把任何类型的值传递给 `unknown` 变量。与 `any` 类型不同的是，`unknown` 类型不存在任何方法。在操作 `unknown` 类型的值的时候，必须手动校验，将其确定为更具体的子类型后才可以进行相应的操作。这样，我们的类型标注就更加安全了。
 
-接下来的示例中，我们会实现一个处理向左向右的转向函数：
+## 子类型是否存在另外一个极端？
 
-```typescript
-enum TurnDirection {
-  Left,
-  Right,
-}
-
-function turnAngle(turn: TurnDirection): number {
-  switch (turn) {
-    case TurnDirection.Left:
-      return -90;
-    case TurnDirection.Right:
-      return 90;
-    default:
-      throw new Error("错误：非法转向！");
-  }
-}
-```
-
-这个代码可以按照预期工作。但是在我们的项目中，在 tsconfig 的配置中开启了 `strict` 配置，那么示例代码将不会通过类型检查：
-![strict_error](../resource/typescript_subtype/typescript_subtype_02.PNG)
-最后的 default 分支没有 `return` 语句，那么默认返回 `undefined` 值，这与 `turnAngle` 的返回值 `number` 类型冲突了。
+最后留一个问题给大家，既然有顶层类型，那么是否存在另外一个极端？与顶层类型相对，是否有底层类型？比如是否存在一个类型，它是其他任何类型的子类型。
