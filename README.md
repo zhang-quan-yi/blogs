@@ -11,3 +11,5 @@
 - [Redux 基础教程：通过数据流认识 Redux](https://github.com/zhang-quan-yi/blogs/blob/master/article/react_redux.md)
 
 - [Jest CLI: 如何执行相关文件的测试用例](https://github.com/zhang-quan-yi/blogs/blob/master/article/jest_changed_file.md)
+
+- [Typescript unknown 类型介绍](https://github.com/zhang-quan-yi/blogs/blob/master/article/typescript_sub_type.md)
